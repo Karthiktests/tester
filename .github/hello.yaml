@@ -1,1 +1,53 @@
 
+name: false positive-azure tables-COVERITY
+on:
+ workflow_dispatch:
+    inputs:
+      comments:
+        description: Provide justification
+        type: string
+        required: false
+      reponame:
+        description: provide project name
+        type: string
+        required: false
+      githubid:
+        description: provide employeeId
+        type: string
+        required: false
+      vulntype:
+        description: vulntype
+        type: string
+        required: false
+      isssuenumber:
+        type: string
+        description: requestforinfo
+        required: false
+      githuburl:
+        type: string
+        description: githuburl
+        required: false
+
+jobs:
+  build_publish:
+    runs-on: ubuntu-latest
+    env: 
+     GH_REPO: ${{ secrets.GH_REPO }}
+                    
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Created Github Issue
+        id: set_issue_number
+        run: |
+          python3 issuesappsec.py \
+            -c "${{ inputs.isssuenumber }}" \
+            -j "${{inputs.comments}}" \
+            -l "${{inputs.githubid}}" \
+            -b "issuenumber::${{ inputs.isssuenumber }}" "githuburl::${{ inputs.githuburl }}" \
+               "VulnerbilityName::${{ inputs.vulntype }}" "project::${{ inputs.reponame }}" "githuburl::${{ inputs.githuburl }}" \
+          echo $ISSUE_NUMBER
+          
+
+     
