@@ -20,7 +20,7 @@ on:
         type: string
         required: false
       isssuenumber:
-        type: string
+        type: number
         description: requestforinfo
         required: false
       githuburl:
