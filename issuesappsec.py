@@ -30,7 +30,7 @@ def main():
     parser.add_argument("-j", "--comments", required=True)
     parser.add_argument("-l", "--github_id", required=True)
     parser.add_argument("-b", "--body", required=True)
-    parser.add_argument("-g", "--githuburl", required=false)
+    parser.add_argument("-g", "--githuburl", required=False)
     args = parser.parse_args()
 
     token = os.getenv("issue_token")
