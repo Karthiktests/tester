@@ -29,7 +29,7 @@ def main():
     parser.add_argument("-c", "--issue_number", required=True)
     parser.add_argument("-j", "--comments", required=True)
     parser.add_argument("-l", "--github_id", required=True)
-    parser.add_argument("-b", "--body", required=False)
+    
     parser.add_argument("-g", "--github_url", required=True)
     parser.add_argument("-v", "--vulnerability_name", required=True)  # New argument
     parser.add_argument("-p", "--project", required=True)  # New argument
