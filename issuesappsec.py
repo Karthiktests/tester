@@ -3,6 +3,8 @@
 import requests
 import sys
 import argparse
+import os
+import json
 
 def create_issue(token, repo, title, body, assignee):
     url = f"https://api.github.com/repos/{repo}/issues"
@@ -30,7 +32,7 @@ def main():
     parser.add_argument("-b", "--body", required=True)
     args = parser.parse_args()
 
-    token = os.getenv("GITHUB_TOKEN")
+    token = os.getenv("issue_token")
     repo = "Karthiktests/tester"
     title = args.issue_number
     body = args.comments

@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
      GH_REPO: ${{ secrets.GH_REPO }}
-     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     issue_token: ${{ secrets.issue_token }}
                     
     steps: 
       - name: Checkout repository
