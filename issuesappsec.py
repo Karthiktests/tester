@@ -30,7 +30,7 @@ def main():
     parser.add_argument("-b", "--body", required=True)
     args = parser.parse_args()
 
-    token = "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"
+    token = os.getenv("GITHUB_TOKEN")
     repo = "Karthiktests/tester"
     title = args.issue_number
     body = args.comments
