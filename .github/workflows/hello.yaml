@@ -47,7 +47,7 @@ jobs:
             -j "${{inputs.comments}}" \
             -l "${{inputs.githubid}}" \
             -b "issuenumber::${{ inputs.isssuenumber }}" "githuburl::${{ inputs.githuburl }}" \
-               "VulnerbilityName::${{ inputs.vulntype }}" "project::${{ inputs.reponame }}" "githuburl::${{ inputs.githuburl }}" \
+               "VulnerbilityName::${{ inputs.vulntype }}" "project::${{ inputs.reponame }}" \
           echo $ISSUE_NUMBER
           
 
