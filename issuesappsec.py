@@ -30,12 +30,13 @@ def main():
     parser.add_argument("-j", "--comments", required=True)
     parser.add_argument("-l", "--github_id", required=True)
     parser.add_argument("-b", "--body", required=True)
+    parser.add_argument("-g", "--github_url", required=True)
     args = parser.parse_args()
 
     token = os.getenv("issue_token")
-    repo = "Karthiktests/tester"
+    repo = "Karthiktests/tester"  # Hardcode the repo here
     title = args.issue_number
-    body = args.comments
+    body = args.comments + "\n\n" + args.github_url
     assignee = args.github_id
     create_issue(token, repo, title, body, assignee)
 
