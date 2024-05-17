@@ -30,13 +30,15 @@ def main():
     parser.add_argument("-j", "--comments", required=True)
     parser.add_argument("-l", "--github_id", required=True)
     parser.add_argument("-b", "--body", required=True)
-    parser.add_argument("-g", "--githuburl", required=False)
+    parser.add_argument("-g", "--github_url", required=True)
+    parser.add_argument("-v", "--vulnerability_name", required=True)  # New argument
+    parser.add_argument("-p", "--project", required=True)  # New argument
     args = parser.parse_args()
 
     token = os.getenv("issue_token")
     repo = "Karthiktests/tester"  # Hardcode the repo here
     title = args.issue_number
-    body = args.comments + "\n\n" + args.githuburl
+    body = args.comments + "\n\n" + args.github_url + "\n\nVulnerability Name: " + args.vulnerability_name + "\n\nProject: " + args.project  # Include new arguments in body
     assignee = args.github_id
     create_issue(token, repo, title, body, assignee)
 
