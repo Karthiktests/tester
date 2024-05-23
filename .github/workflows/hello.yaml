@@ -1,40 +1,45 @@
-
-name: tester1
+name: PROBOT TEST
 on:
- workflow_dispatch:
-    inputs:
-      comments:
-        description: Provide justification
-        type: string
-        required: false
-      reponame:
-        description: provide project name
-        type: string
-        required: false
-      githubid:
-        description: provide employeeId
-        type: string
-        required: false
-      vulntype:
-        description: vulntype
-        type: string
-        required: false
-      isssuenumber:
-        type: number
-        description: requestforinfo
-        required: false
-      githuburl:
-        type: string
-        description: githuburl
-        required: false
+  workflow_dispatch:
+     inputs:
+       alertnumber: # alert_number
+         type: string   
+         description: Alert number to be marked false positive
+         required: false
+       comment: # dismissed_comment
+         description: Provide justification
+         type: string
+         required: false
+       reponame:  # repository name
+         description: provide project name
+         type: string
+         required: false
+       githubid: # github username / AA.yaml cmbdshortname / squadname_number
+         description: provide github username
+         type: string
+         required: false
+       vulntype: # vulnerability type
+         description: vulntype
+         type: string
+         required: false
+       platform: # platform code scanning
+         description: platform
+         type: string
+         required: false
 
 jobs:
   build_publish:
-    runs-on: ubuntu-latest
+    runs-on: sastappp69
     env: 
-     GH_REPO: ${{ secrets.GH_REPO }}
-     issue_token: ${{ secrets.issue_token }}
-                    
+      SQUAD360PASSWORD: ${{ secrets.SQUAD360PASSWORD }}
+      SQUAD360USERNAME: ${{ secrets.SQUAD360USERNAME }}
+      AZUREACCOUNTKEY: ${{ secrets.AZUREACCOUNTKEY }}
+      COMMENT: ${{ inputs.comment }}
+      GH_REPO: ${{ secrets.GH_REPO }}
+      NUMBER: ${{ inputs.alertnumber }}
+      GITHUBID: ${{ inputs.githubid}}
+      VULNTYPE:  ${{ inputs.vulntype}}
+
     steps: 
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -42,16 +47,50 @@ jobs:
       - name: Created Github Issue
         id: set_issue_number
         run: |
-          python3 issuesappsec.py \
-            -c "${{ inputs.isssuenumber }}" \
-            -j "${{inputs.comments}}" \
-            -l "${{inputs.githubid}}" \
-            -g "${{inputs.githuburl}}" \
-            -v "${{inputs.vulntype}}" \
-            -p "${{inputs.reponame}}"
-            -b "issuenumber::${{ inputs.isssuenumber }}" "github_url::${{ inputs.githuburl }}" \
-               "vulnerability_name::${{ inputs.vulntype }}" "project::${{ inputs.reponame }}" \
+          GITHUBID=$(echo "${{ inputs.githubid }}" | awk -F '|' '{print $1}')
+          SHORT_NAME=$(echo "${{ inputs.githubid }}" | awk -F '|' '{print $2}')
+          SQUAD_NAME=$(echo "${{ inputs.githubid }}" | awk -F '|' '{print $3}')
+          EMAIL=$(echo "${{ inputs.githubid }}" | awk -F '|' '{print $4}')
+          ISSUE_NUMBER=$(python3 /opt/coverity/actions-runner/_work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/issuesappsec.py \
+            -c "${{ inputs.alertnumber }}" \
+            -j "$COMMENT" \
+            -l "${{ inputs.platform }}" \
+            -b "alertnumber::${{ inputs.alertnumber }}" "comment::$COMMENT" "platform::${{ inputs.platform }}"\
+               "VulnerbilityName::${{ inputs.vulntype }}" "RepositoryName::${{ inputs.reponame }}"\
+               "Email::$EMAIL" "GithubId::$GITHUBID" "SquadName::$SQUAD_NAME" "AppShortName::$SHORT_NAME" 
+               )
           echo $ISSUE_NUMBER
-          
 
-     
+      - name: notifications
+        run : |
+            python3 /opt/coverity/actions-runner/_work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/notification.py \
+              -e "${{ inputs.githubid }}" \
+              -c "${{ inputs.alertnumber }}" \
+              -j "$COMMENT" \
+              -p "${{ inputs.reponame }}" \
+              -l "${{ inputs.platform }}" 
+        shell: bash
+
+      - name : insert into azure table
+        run : |
+          python3 /opt/coverity/actions-runner/_work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/azuretable.py \
+            -e "${{ inputs.githubid }}" \
+            -c "${{ inputs.alertnumber }}" \
+            -j "$COMMENT" \
+            -p "${{ inputs.reponame }}" \
+            -l "${{ inputs.platform }}" \
+            -vn "${{ inputs.vulntype }}" \
+        shell : bash    
+
+      - name: Run rally.py
+        run: |
+         python3 /opt/coverity/actions-runner/_work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/rally.py \
+           -l "${{ inputs.platform }}" \
+           -# "${{ secrets.apiKey }}" \
+           -c "${{ inputs.alertnumber }}" \
+           -j "$COMMENT"
+        env:
+         RALLY_BLACKDUCK_FALSE_POSITIVE_USER_STORY: ${{ secrets.RALLY_BLACKDUCK_FALSE_POSITIVE_USER_STORY }}
+         RALLY_COVERITY_FALSE_POSITIVE_USER_STORY: ${{ secrets.RALLY_COVERITY_FALSE_POSITIVE_USER_STORY }}
+         RALLY_WORKSPACE: ${{secrets.RALLY_WORKSPACE}}
+         RALLY_PROJECT: ${{secrets.RALLY_PROJECT}}
