@@ -6,7 +6,7 @@ on:
          type: string   
          description: Alert number to be marked false positive
          required: false
-       comment: # dismissed_comment
+       comments: # dismissed_comment
          description: Provide justification
          type: string
          required: false
@@ -24,6 +24,14 @@ on:
          required: false
        platform: # platform code scanning
          description: platform
+         type: string
+         required: false
+       employInfo:
+         description: employeedata
+         type: string
+         required: false
+       githuburl:
+         description: test
          type: string
          required: false
 
