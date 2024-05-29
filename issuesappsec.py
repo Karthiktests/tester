@@ -5,7 +5,7 @@ import sys
 import argparse
 import os
 import json
-
+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
 def create_issue(token, repo, title, body, assignee):
     url = f"https://api.github.com/repos/{repo}/issues"
     headers = {
