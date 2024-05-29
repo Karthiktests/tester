@@ -8,7 +8,7 @@ import json
 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
 def create_issue(token, repo, title, body, assignee):
     url = f"https://api.github.com/repos/{repo}/issues"
-    headers = {
+    headers = {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
         "Authorization": f"token {token}",
         "Accept": "application/vnd.github.v3+json",
     }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 
